@@ -30,7 +30,7 @@ function HomePage() {
                 Evalen X
               </span>
               <span className="text-xs text-base-content/60 font-medium -mt-1">
-                Code Together
+                Code Together link.
               </span>
             </div>
           </Link>
