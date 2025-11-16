@@ -6,15 +6,23 @@ export const protectRoute = [
   async (req, res, next) => {
     try {
       const clerkId = req.auth().userId;
+      const email = req.auth().emailAddresses?.[0]?.emailAddress;
+      const firstName = req.auth().firstName;
+      const lastName = req.auth().lastName;
 
-      if (!clerkId) return res.status(401).json({ message: "Unauthorized - invalid token" });
+      if (!clerkId)
+        return res
+          .status(401)
+          .json({ message: "Unauthorized - invalid token" });
 
-      // find user in db by clerk ID
-      const user = await User.findOne({ clerkId });
+      // upsert user in MongoDB
+      const user = await User.findOneAndUpdate(
+        { clerkId },
+        { email, firstName, lastName },
+        { upsert: true, new: true } // creates if not exists, returns new document
+      );
 
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      // attach user to req
+      // attach user to request
       req.user = user;
 
       next();
